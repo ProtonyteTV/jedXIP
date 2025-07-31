@@ -1,21 +1,35 @@
-# jedXIP
+# 🚀 jedXIP — Lightweight XIP/XAR Archiver for Windows
 
-**jedXIP** is a lightweight `.xip` and `.xar` archive tool for Windows, designed to handle Apple's archive formats without the bloated features. Built in Python, jedXIP is focused on simplicity and functionality — perfect for developers who need to inspect or extract XIP/XAR files on Windows systems.
+**jedXIP** is a no-bloat `.xip` and `.xar` archive manager built for Windows.  
+Crafted for developers who need to inspect or extract Apple's archive formats on a Windows environment without setting up complex tools.
 
-## Features
-- Open and view `.xip` and `.xar` archives
-- Extract entire archives or selected files/folders
-- Create new `.xip` and `.xar` archives from files or folders
-- Drag and Drop support for quick archiving
-- Minimalistic WinRAR-style file explorer (no dropdowns, double-click folder navigation)
-- Windows Shell file association for `.xip` and `.xar`
+> **Built in Python. Made for devs. No gimmicks.**
 
-## Why?
-Because why not? 
-jedXIP is built for devs who just need a no-nonsense XIP/XAR tool on Windows, even if the use-case is rare. It's there when you need it.
+---
 
-## Usage
-1. Download
-2. Install required dependencies:
-   ```bash
-   python setup.py install
+## 🔧 Features
+- 📂 Open and view `.xip` and `.xar` archives
+- 📤 Extract entire archives or selected files/folders
+- 🗜️ Create new `.xip` or `.xar` archives (files or folders)
+- 🖱️ Drag and Drop archiving
+- 🗃️ WinRAR-style file explorer (double-click to navigate folders)
+- 🖥️ Windows Shell file association for `.xip` and `.xar`
+
+---
+
+## ❓ Why?
+Because why not?  
+Even if `.xip` files are rare on Windows, **jedXIP** is built to be that "just-in-case" tool when you need to handle them.
+
+It's **there when you need it**, **silent when you don’t**.
+
+---
+
+## 🖥️ Installation & Usage
+
+### Download
+- Head over to the [Releases](#) section and download the latest **jedXIP Setup.exe**
+
+### Optional: Manual Install (for Python Users)
+```bash
+python setup.py install
