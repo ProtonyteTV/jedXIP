@@ -1,4 +1,5 @@
 # jedXIP.py
+# The main application with a Finder-style GUI using Tkinter.
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
@@ -15,18 +16,7 @@ import shutil
 from tkinterdnd2 import DND_FILES, TkinterDnD
 import queue
 
-# --- NEW: Helper function to find assets when bundled in an .exe ---
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
 class Tooltip:
-    # ... (Tooltip class is unchanged)
     def __init__(self, widget, text):
         self.widget = widget; self.text = text; self.tooltip_window = None
         self.widget.bind("<Enter>", self.show_tooltip)
@@ -50,23 +40,16 @@ class XipApp(TkinterDnD.Tk):
         self.title("jedXIP"); self.geometry("900x600"); self.minsize(700, 500)
         self.colors = {"bg": "#2B2B2B", "bg_light": "#3C3F41", "primary": "#007ACC", "text": "#FFFFFF", "text_dark": "#BBBBBB", "accent": "#4A90E2", "hover": "#555555"}
         self.fonts = {"main": ('Helvetica', 10), "bold": ('Helvetica', 10, 'bold')}
-        
-        # --- MODIFIED: All icon paths now use the resource_path function ---
         try:
-            self.folder_icon = tk.PhotoImage(file=resource_path('folder.png'))
-            self.file_icon = tk.PhotoImage(file=resource_path('file.png'))
-            self.new_icon = tk.PhotoImage(file=resource_path('new.png'))
-            self.save_icon = tk.PhotoImage(file=resource_path('save.png'))
-            self.open_icon = tk.PhotoImage(file=resource_path('open.png'))
-            self.extract_icon = tk.PhotoImage(file=resource_path('extract.png'))
-            self.extract_selected_icon = tk.PhotoImage(file=resource_path('extract_selected.png'))
-            self.help_icon = tk.PhotoImage(file=resource_path('help.png'))
-            self.developer_icon = tk.PhotoImage(file=resource_path('developer.png'))
+            self.folder_icon = tk.PhotoImage(file='folder.png'); self.file_icon = tk.PhotoImage(file='file.png')
+            self.new_icon = tk.PhotoImage(file='new.png'); self.save_icon = tk.PhotoImage(file='save.png')
+            self.open_icon = tk.PhotoImage(file='open.png'); self.extract_icon = tk.PhotoImage(file='extract.png')
+            self.extract_selected_icon = tk.PhotoImage(file='extract_selected.png')
+            self.help_icon = tk.PhotoImage(file='help.png')
+            self.developer_icon = tk.PhotoImage(file='developer.png')
         except tk.TclError as e:
             print(f"Could not load an icon: {e}. Icons will not be displayed.")
             self.folder_icon=self.file_icon=self.new_icon=self.save_icon=self.open_icon=self.extract_icon=self.extract_selected_icon=self.help_icon=self.developer_icon = None
-
-        # ... (The rest of the __init__ method and the entire file is unchanged) ...
         self.logic = XipManager()
         self.source_type = None; self.source_path = None; self.view_contents = []
         self.staged_paths = []; self.current_nav_path = ""; self.item_path_map = {}
@@ -77,8 +60,7 @@ class XipApp(TkinterDnD.Tk):
         self._setup_styles(); self._create_widgets()
         self.drop_target_register(DND_FILES); self.dnd_bind('<<Drop>>', self._handle_drag_drop)
         self.protocol("WM_DELETE_WINDOW", self._on_closing); self._update_new_save_button_state()
-        
-    # ... (paste the rest of your unchanged jedXIP.py code here)
+
     def _setup_styles(self):
         style = ttk.Style(self); style.theme_use('clam'); self.configure(background=self.colors["bg"])
         style.configure('.', background=self.colors["bg"], foreground=self.colors["text"], font=self.fonts["main"])
@@ -105,7 +87,6 @@ class XipApp(TkinterDnD.Tk):
     def _create_top_toolbar(self):
         toolbar_frame = ttk.Frame(self, padding=5, relief=tk.RAISED, borderwidth=1)
         toolbar_frame.pack(side=tk.TOP, fill=tk.X)
-        
         self.new_save_button = ttk.Button(toolbar_frame, image=self.new_icon, command=self.create_archive, style='Toolbar.TButton')
         self.new_save_button.pack(side=tk.LEFT, padx=2); self.new_save_tooltip = Tooltip(self.new_save_button, "New Archive")
         open_btn = ttk.Button(toolbar_frame, image=self.open_icon, command=self.open_archive, style='Toolbar.TButton')
@@ -118,13 +99,10 @@ class XipApp(TkinterDnD.Tk):
         extract_btn.pack(side=tk.LEFT, padx=2); Tooltip(extract_btn, "Extract All")
         extract_sel_btn = ttk.Button(toolbar_frame, image=self.extract_selected_icon, command=self.extract_selected, style='Toolbar.TButton')
         extract_sel_btn.pack(side=tk.LEFT, padx=2); Tooltip(extract_sel_btn, "Extract Selected")
-        
         dev_btn = ttk.Button(toolbar_frame, image=self.developer_icon, command=self._show_developers_window, style='Toolbar.TButton')
-        dev_btn.pack(side=tk.RIGHT, padx=2)
-        Tooltip(dev_btn, "Developers")
+        dev_btn.pack(side=tk.RIGHT, padx=2); Tooltip(dev_btn, "Developers")
         about_btn = ttk.Button(toolbar_frame, image=self.help_icon, command=self._show_about_window, style='Toolbar.TButton')
-        about_btn.pack(side=tk.RIGHT, padx=2)
-        Tooltip(about_btn, "About jedXIP")
+        about_btn.pack(side=tk.RIGHT, padx=2); Tooltip(about_btn, "About jedXIP")
 
     def _create_main_layout(self):
         main_paned_window = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
@@ -133,7 +111,8 @@ class XipApp(TkinterDnD.Tk):
         sidebar_frame.pack_propagate(False)
         ttk.Label(sidebar_frame, text="jedXIP", font=('Helvetica', 14, 'bold'), padding=(10, 10), foreground=self.colors["accent"]).pack(anchor=tk.NW)
         
-        branding_label = ttk.Label(sidebar_frame, text="Made by jedToolKit Team", style="Link.TLabel")
+        # --- MODIFIED: Branding label updated to jedPlatforms ---
+        branding_label = ttk.Label(sidebar_frame, text="© jedPlatforms", style="Link.TLabel")
         branding_label.pack(side=tk.BOTTOM, pady=10)
         
         main_paned_window.add(sidebar_frame, weight=1)
@@ -170,9 +149,12 @@ class XipApp(TkinterDnD.Tk):
         about_win.title("About jedXIP")
         about_win.geometry("400x200")
         about_win.resizable(False, False); about_win.transient(self); about_win.grab_set()
+        
+        # --- MODIFIED: Branding updated ---
         about_text = ("jedXIP Archive Manager\n\n"
-                      "A modern, lightweight tool for creating and managing .xip and .xar archives. \n\n"
-                      "Powered by the jedToolKit suite, jedXIP offers a fast and intuitive interface for all your archiving needs.")
+                      "A modern, lightweight tool for creating and managing .xip and .xar archives for Windows. \n\n"
+                      "2025 jedPlatforms")
+        
         about_frame = ttk.Frame(about_win, padding=20)
         about_frame.pack(expand=True, fill=tk.BOTH)
         about_label = ttk.Label(about_frame, text=about_text, wraplength=360, justify=tk.CENTER)
@@ -183,15 +165,20 @@ class XipApp(TkinterDnD.Tk):
         dev_win.title("Developers")
         dev_win.geometry("400x200")
         dev_win.resizable(False, False); dev_win.transient(self); dev_win.grab_set()
+
         developers = [
-            ("Your Name Here", "Lead Developer"),
-            ("Team Member 2", "UI/UX Designer"),
-            ("Team Member 3", "QA Engineer")
+            ("Kyle L.", "Head of Development"),
+            ("Michael S.", "Lead Backend Developer"),
+            ("Mark A.", "UI/UX Designer")
         ]
+        
         dev_frame = ttk.Frame(dev_win, padding=20)
         dev_frame.pack(expand=True, fill=tk.BOTH)
-        title_label = ttk.Label(dev_frame, text="jedToolKit Team", font=self.fonts["bold"])
+        
+        # --- MODIFIED: Branding updated ---
+        title_label = ttk.Label(dev_frame, text="Team behind jedXIP", font=self.fonts["bold"])
         title_label.pack(pady=(0, 15))
+
         for name, role in developers:
             dev_text = f"{name} - {role}"
             ttk.Label(dev_frame, text=dev_text).pack(pady=2)
@@ -215,6 +202,7 @@ class XipApp(TkinterDnD.Tk):
             context_menu.add_command(label="Compress Selected to New Archive...", command=self._context_compress_selected)
         context_menu.post(event.x_root, event.y_root)
 
+    # ... (The rest of the file is unchanged, including all logic and other methods) ...
     def _context_preview(self):
         item_id = self.tree.selection()[0]
         item_full_path = self.item_path_map.get(item_id)
